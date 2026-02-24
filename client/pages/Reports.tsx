@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -102,18 +103,22 @@ const mockTaskStatusData = [
 const COLORS = ["#10b981", "#3b82f6", "#f59e0b"];
 
 export default function Reports() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [reportType, setReportType] = useState<"weekly" | "monthly">("weekly");
   const [selectedPeriod, setSelectedPeriod] = useState("current");
 
   const handleExportPDF = () => {
     alert(
-      `Exporting ${reportType} report for ${selectedPeriod} period...`
+      t("reports.exportingReport", {
+        type: reportType === "weekly" ? t("reports.weeklyReport") : t("reports.monthlyReport"),
+        period: selectedPeriod === "current" ? t("reports.currentPeriod") : selectedPeriod === "previous" ? t("reports.previousPeriod") : t("reports.allTime"),
+      })
     );
   };
 
   const handleExportCSV = () => {
-    alert(`Exporting performance data as CSV...`);
+    alert(t("reports.exportingCSV"));
   };
 
   const totalTasks = mockPerformanceData.reduce(
@@ -142,7 +147,7 @@ export default function Reports() {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-2xl font-bold">Reports & Analytics</h1>
+            <h1 className="text-2xl font-bold">{t("reports.title")}</h1>
           </div>
 
           <div className="flex gap-2">
@@ -153,7 +158,7 @@ export default function Reports() {
               size="sm"
             >
               <Download className="w-4 h-4" />
-              Export CSV
+              {t("reports.exportCSV")}
             </Button>
             <Button
               className="gap-2 bg-primary hover:bg-primary/90"
@@ -161,7 +166,7 @@ export default function Reports() {
               size="sm"
             >
               <Download className="w-4 h-4" />
-              Export PDF
+              {t("reports.exportPDF")}
             </Button>
           </div>
         </div>
@@ -175,7 +180,7 @@ export default function Reports() {
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
               <div>
                 <label className="text-sm font-medium text-muted-foreground">
-                  Report Type
+                  {t("reports.reportType")}
                 </label>
                 <Select
                   value={reportType}
@@ -185,24 +190,24 @@ export default function Reports() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="weekly">Weekly Report</SelectItem>
-                    <SelectItem value="monthly">Monthly Report</SelectItem>
+                    <SelectItem value="weekly">{t("reports.weeklyReport")}</SelectItem>
+                    <SelectItem value="monthly">{t("reports.monthlyReport")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
                 <label className="text-sm font-medium text-muted-foreground">
-                  Period
+                  {t("reports.period")}
                 </label>
                 <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
                   <SelectTrigger className="w-48 mt-2 bg-white border-border">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="current">Current Period</SelectItem>
-                    <SelectItem value="previous">Previous Period</SelectItem>
-                    <SelectItem value="all">All Time</SelectItem>
+                    <SelectItem value="current">{t("reports.currentPeriod")}</SelectItem>
+                    <SelectItem value="previous">{t("reports.previousPeriod")}</SelectItem>
+                    <SelectItem value="all">{t("reports.allTime")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -214,22 +219,22 @@ export default function Reports() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
             {
-              label: "Total Tasks",
+              label: t("reports.totalTasks"),
               value: totalTasks,
               icon: "📊",
             },
             {
-              label: "Completed",
+              label: t("reports.completed"),
               value: completedTasks,
               icon: "✅",
             },
             {
-              label: "Avg Completion Rate",
+              label: t("reports.avgCompletionRate"),
               value: `${avgCompletionRate}%`,
               icon: "📈",
             },
             {
-              label: "Team Members",
+              label: t("reports.teamMembers"),
               value: mockPerformanceData.length,
               icon: "👥",
             },
@@ -255,7 +260,7 @@ export default function Reports() {
           {/* Task Status Distribution */}
           <Card className="border-0 shadow-sm">
             <CardHeader>
-              <CardTitle>Task Status Distribution</CardTitle>
+              <CardTitle>{t("reports.taskStatusDistribution")}</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -283,7 +288,7 @@ export default function Reports() {
           {/* Weekly Progress */}
           <Card className="border-0 shadow-sm">
             <CardHeader>
-              <CardTitle>Weekly Progress Trend</CardTitle>
+              <CardTitle>{t("reports.weeklyProgressTrend")}</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -316,7 +321,7 @@ export default function Reports() {
         {/* Employee Performance Comparison */}
         <Card className="border-0 shadow-sm mb-8">
           <CardHeader>
-            <CardTitle>Employee Performance Comparison</CardTitle>
+            <CardTitle>{t("reports.employeePerformanceComparison")}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={400}>
@@ -337,7 +342,7 @@ export default function Reports() {
         {/* Employee Completion Rates */}
         <Card className="border-0 shadow-sm">
           <CardHeader>
-            <CardTitle>Employee Completion Rates</CardTitle>
+            <CardTitle>{t("reports.employeeCompletionRates")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -366,7 +371,7 @@ export default function Reports() {
                     </div>
                   </div>
                   <div className="text-sm text-muted-foreground w-24 text-right">
-                    {emp.completed}/{emp.completed + emp.pending + emp.inProgress} tasks
+                    {emp.completed}/{emp.completed + emp.pending + emp.inProgress} {t("common.tasks")}
                   </div>
                 </div>
               ))}

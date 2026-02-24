@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -98,7 +99,23 @@ const mockEmployees: Employee[] = [
 const roles = ["Developer", "Project Manager", "Designer", "QA Engineer", "HR Manager"];
 const departments = ["Engineering", "Design", "Management", "Quality Assurance", "Human Resources"];
 
+const roleKeys: Record<string, string> = {
+  Developer: "developer",
+  "Project Manager": "projectManager",
+  Designer: "designer",
+  "QA Engineer": "qaEngineer",
+  "HR Manager": "hrManager",
+};
+const departmentKeys: Record<string, string> = {
+  Engineering: "engineering",
+  Design: "design",
+  Management: "management",
+  "Quality Assurance": "qualityAssurance",
+  "Human Resources": "humanResources",
+};
+
 export default function EmployeeManagement() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
   const [searchTerm, setSearchTerm] = useState("");
@@ -152,7 +169,7 @@ export default function EmployeeManagement() {
       !formData.department ||
       !formData.joinDate
     ) {
-      alert("Please fill in all required fields");
+      alert(t("employeeManagement.fillRequired"));
       return;
     }
 
@@ -181,7 +198,7 @@ export default function EmployeeManagement() {
   };
 
   const handleDeleteEmployee = (id: string) => {
-    if (window.confirm("Are you sure you want to delete this employee?")) {
+    if (window.confirm(t("employeeManagement.confirmDeleteEmployee"))) {
       setEmployees(employees.filter((e) => e.id !== id));
     }
   };
@@ -208,7 +225,7 @@ export default function EmployeeManagement() {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-2xl font-bold">Employee Management</h1>
+            <h1 className="text-2xl font-bold">{t("employeeManagement.title")}</h1>
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -218,27 +235,27 @@ export default function EmployeeManagement() {
                 onClick={() => handleOpenDialog()}
               >
                 <Plus className="w-4 h-4" />
-                Add Employee
+                {t("employeeManagement.addEmployee")}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>
-                  {editingEmployee ? "Edit Employee" : "Add New Employee"}
+                  {editingEmployee ? t("employeeManagement.editEmployee") : t("employeeManagement.addNewEmployee")}
                 </DialogTitle>
                 <DialogDescription>
                   {editingEmployee
-                    ? "Update the employee details below"
-                    : "Fill in the details to add a new employee"}
+                    ? t("employeeManagement.editEmployeeDesc")
+                    : t("employeeManagement.addEmployeeDesc")}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="name">Full Name *</Label>
+                  <Label htmlFor="name">{t("employeeManagement.fullName")}</Label>
                   <Input
                     id="name"
-                    placeholder="Enter full name"
+                    placeholder={t("employeeManagement.fullNamePlaceholder")}
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
@@ -248,11 +265,11 @@ export default function EmployeeManagement() {
                 </div>
 
                 <div>
-                  <Label htmlFor="email">Email Address *</Label>
+                  <Label htmlFor="email">{t("employeeManagement.emailAddress")}</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="Enter email address"
+                    placeholder={t("employeeManagement.emailPlaceholder")}
                     value={formData.email}
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
@@ -263,7 +280,7 @@ export default function EmployeeManagement() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="role">Role *</Label>
+                    <Label htmlFor="role">{t("employeeManagement.role")}</Label>
                     <Select
                       value={formData.role}
                       onValueChange={(value) =>
@@ -271,12 +288,12 @@ export default function EmployeeManagement() {
                       }
                     >
                       <SelectTrigger className="mt-2">
-                        <SelectValue placeholder="Select role" />
+                        <SelectValue placeholder={t("employeeManagement.selectRole")} />
                       </SelectTrigger>
                       <SelectContent>
                         {roles.map((r) => (
                           <SelectItem key={r} value={r}>
-                            {r}
+                            {t(`employeeManagement.roles.${roleKeys[r] || r}`)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -284,7 +301,7 @@ export default function EmployeeManagement() {
                   </div>
 
                   <div>
-                    <Label htmlFor="department">Department *</Label>
+                    <Label htmlFor="department">{t("employeeManagement.department")}</Label>
                     <Select
                       value={formData.department}
                       onValueChange={(value) =>
@@ -292,12 +309,12 @@ export default function EmployeeManagement() {
                       }
                     >
                       <SelectTrigger className="mt-2">
-                        <SelectValue placeholder="Select department" />
+                        <SelectValue placeholder={t("employeeManagement.selectDepartment")} />
                       </SelectTrigger>
                       <SelectContent>
                         {departments.map((d) => (
                           <SelectItem key={d} value={d}>
-                            {d}
+                            {t(`employeeManagement.departments.${departmentKeys[d] || d}`)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -306,7 +323,7 @@ export default function EmployeeManagement() {
                 </div>
 
                 <div>
-                  <Label htmlFor="joinDate">Join Date *</Label>
+                  <Label htmlFor="joinDate">{t("employeeManagement.joinDate")}</Label>
                   <Input
                     id="joinDate"
                     type="date"
@@ -323,13 +340,13 @@ export default function EmployeeManagement() {
                     variant="outline"
                     onClick={() => setIsDialogOpen(false)}
                   >
-                    Cancel
+                    {t("common.cancel")}
                   </Button>
                   <Button
                     className="bg-primary hover:bg-primary/90"
                     onClick={handleSaveEmployee}
                   >
-                    {editingEmployee ? "Update Employee" : "Add Employee"}
+                    {editingEmployee ? t("employeeManagement.updateEmployee") : t("employeeManagement.addEmployee")}
                   </Button>
                 </div>
               </div>
@@ -343,25 +360,25 @@ export default function EmployeeManagement() {
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8">
           <div className="flex-1 max-w-md relative">
-            <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
+            <Search className="w-4 h-4 absolute left-3 top-3 rtl:left-auto rtl:right-3 text-muted-foreground" />
             <Input
-              placeholder="Search employees..."
+              placeholder={t("employeeManagement.searchEmployees")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-white border-border"
+              className="pl-10 rtl:pl-0 rtl:pr-10 bg-white border-border"
             />
           </div>
 
           <Select value={filterDept} onValueChange={setFilterDept}>
             <SelectTrigger className="w-full sm:w-48 bg-white border-border">
-              <SelectValue placeholder="Filter by department" />
+              <SelectValue placeholder={t("employeeManagement.filterByDepartment")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Departments</SelectItem>
+              <SelectItem value="all">{t("employeeManagement.allDepartments")}</SelectItem>
               {departments.map((d) => (
-                <SelectItem key={d} value={d}>
-                  {d}
-                </SelectItem>
+              <SelectItem key={d} value={d}>
+                {t(`employeeManagement.departments.${departmentKeys[d] || d}`)}
+              </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -372,7 +389,7 @@ export default function EmployeeManagement() {
           {filteredEmployees.length === 0 ? (
             <Card className="border-0 shadow-sm col-span-full">
               <CardContent className="p-12 text-center">
-                <p className="text-muted-foreground text-lg">No employees found</p>
+                <p className="text-muted-foreground text-lg">{t("employeeManagement.noEmployees")}</p>
               </CardContent>
             </Card>
           ) : (
@@ -406,22 +423,22 @@ export default function EmployeeManagement() {
                           className="gap-2 cursor-pointer"
                         >
                           <Edit2 className="w-4 h-4" />
-                          Edit Employee
+                          {t("employeeManagement.editEmployee")}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleToggleStatus(employee.id)}
                           className="gap-2 cursor-pointer"
                         >
                           {employee.status === "active"
-                            ? "Deactivate"
-                            : "Activate"}
+                            ? t("employeeManagement.deactivate")
+                            : t("employeeManagement.activate")}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleDeleteEmployee(employee.id)}
                           className="gap-2 cursor-pointer text-red-600"
                         >
                           <Trash2 className="w-4 h-4" />
-                          Delete Employee
+                          {t("employeeManagement.deleteEmployee")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -431,18 +448,18 @@ export default function EmployeeManagement() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-slate-50 rounded-lg p-3">
                         <p className="text-xs text-muted-foreground font-medium">
-                          Role
+                          {t("common.role")}
                         </p>
                         <p className="font-semibold text-foreground mt-1">
-                          {employee.role}
+                          {t(`employeeManagement.roles.${roleKeys[employee.role] || employee.role}`)}
                         </p>
                       </div>
                       <div className="bg-slate-50 rounded-lg p-3">
                         <p className="text-xs text-muted-foreground font-medium">
-                          Department
+                          {t("common.department")}
                         </p>
                         <p className="font-semibold text-foreground mt-1">
-                          {employee.department}
+                          {t(`employeeManagement.departments.${departmentKeys[employee.department] || employee.department}`)}
                         </p>
                       </div>
                     </div>
@@ -450,7 +467,7 @@ export default function EmployeeManagement() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-slate-50 rounded-lg p-3">
                         <p className="text-xs text-muted-foreground font-medium">
-                          Join Date
+                          {t("common.joinDate")}
                         </p>
                         <p className="font-semibold text-foreground mt-1">
                           {new Date(employee.joinDate).toLocaleDateString()}
@@ -458,7 +475,7 @@ export default function EmployeeManagement() {
                       </div>
                       <div className="bg-slate-50 rounded-lg p-3">
                         <p className="text-xs text-muted-foreground font-medium">
-                          Status
+                          {t("common.status")}
                         </p>
                         <Badge
                           className={`mt-1 ${
@@ -467,8 +484,7 @@ export default function EmployeeManagement() {
                               : "bg-red-100 text-red-700"
                           }`}
                         >
-                          {employee.status.charAt(0).toUpperCase() +
-                            employee.status.slice(1)}
+                          {t(`common.${employee.status}`)}
                         </Badge>
                       </div>
                     </div>

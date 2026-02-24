@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +24,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface Task {
   id: string;
@@ -102,6 +104,7 @@ const mockTasks: Task[] = [
 ];
 
 export default function EmployeeDashboard() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
@@ -188,33 +191,35 @@ export default function EmployeeDashboard() {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 rtl:space-x-reverse">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="md:hidden p-2 hover:bg-slate-100 rounded-lg"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 rtl:space-x-reverse">
               <img
                 src="/Adsolution logotrans.png"
                 alt="Adsolution"
                 className="h-10 w-auto object-contain"
               />
-              <h1 className="text-xl font-bold hidden sm:block">TaskFlow</h1>
+              <h1 className="text-xl font-bold hidden sm:block">{t("dashboard.employee.title")}</h1>
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
-            <div className="hidden sm:flex items-center space-x-2 bg-slate-100 rounded-lg px-3 py-2">
+          <div className="flex items-center space-x-4 rtl:space-x-reverse">
+            <div className="hidden sm:flex items-center space-x-2 rtl:space-x-reverse bg-slate-100 rounded-lg px-3 py-2">
               <Search className="w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Search tasks..."
+                placeholder={t("dashboard.employee.searchTasks")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="bg-transparent border-0 focus:ring-0 w-32"
               />
             </div>
+
+            <LanguageSwitcher />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -231,8 +236,8 @@ export default function EmployeeDashboard() {
                   onClick={handleLogout}
                   className="text-red-600 cursor-pointer"
                 >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
+                  <LogOut className="w-4 h-4 mr-2 rtl:ml-2 rtl:mr-0" />
+                  {t("common.logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -245,34 +250,34 @@ export default function EmployeeDashboard() {
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-foreground mb-2">
-            Welcome back, {user.name}! 👋
+            {t("dashboard.employee.welcome", { name: user.name })}
           </h2>
-          <p className="text-muted-foreground">Here's what you need to work on today</p>
+          <p className="text-muted-foreground">{t("dashboard.employee.subtitle")}</p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
             {
-              label: "Total Tasks",
+              label: t("dashboard.employee.totalTasks"),
               value: taskStats.total,
               icon: "📋",
               color: "from-blue-100 to-blue-50",
             },
             {
-              label: "In Progress",
+              label: t("dashboard.employee.inProgress"),
               value: taskStats.inProgress,
               icon: "⚡",
               color: "from-amber-100 to-amber-50",
             },
             {
-              label: "Pending",
+              label: t("dashboard.employee.pending"),
               value: taskStats.pending,
               icon: "⏳",
               color: "from-orange-100 to-orange-50",
             },
             {
-              label: "Completed",
+              label: t("dashboard.employee.completed"),
               value: taskStats.completed,
               icon: "✅",
               color: "from-green-100 to-green-50",
@@ -297,7 +302,7 @@ export default function EmployeeDashboard() {
         {/* Filters and Task List */}
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <h3 className="text-2xl font-bold">My Tasks</h3>
+            <h3 className="text-2xl font-bold">{t("dashboard.employee.myTasks")}</h3>
             <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               {(["all", "pending", "in-progress", "completed"] as const).map((status) => (
                 <button
@@ -309,7 +314,9 @@ export default function EmployeeDashboard() {
                       : "bg-white border border-border text-foreground hover:border-primary"
                   }`}
                 >
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                  {status === "all"
+                    ? t("common.all")
+                    : t(`common.${status === "in-progress" ? "inProgress" : status}`)}
                 </button>
               ))}
             </div>
@@ -320,7 +327,7 @@ export default function EmployeeDashboard() {
             {filteredTasks.length === 0 ? (
               <Card className="border-0 shadow-sm">
                 <CardContent className="p-12 text-center">
-                  <p className="text-muted-foreground text-lg">No tasks found</p>
+                  <p className="text-muted-foreground text-lg">{t("dashboard.employee.noTasks")}</p>
                 </CardContent>
               </Card>
             ) : (
@@ -348,14 +355,12 @@ export default function EmployeeDashboard() {
                                 variant="secondary"
                                 className={`${getPriorityColor(task.priority)} border`}
                               >
-                                {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}{" "}
-                                Priority
+                                {t(`common.${task.priority}`)} {t("common.priority")}
                               </Badge>
                               <Badge variant="outline" className="text-xs">
-                                {task.status
-                                  .split("-")
-                                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                                  .join(" ")}
+                                {task.status === "in-progress"
+                                  ? t("common.inProgress")
+                                  : t(`common.${task.status}`)}
                               </Badge>
                             </div>
                           </div>
@@ -378,13 +383,13 @@ export default function EmployeeDashboard() {
                           </div>
                           {isDeadlineSoon(task.deadline) && (
                             <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
-                              Due Soon
+                              {t("common.dueSoon")}
                             </span>
                           )}
                         </div>
 
                         <div className="text-xs text-muted-foreground">
-                          Assigned by {task.assignedBy}
+                          {t("common.assignedBy")} {task.assignedBy}
                         </div>
 
                         {(task.attachments > 0 || task.comments > 0) && (

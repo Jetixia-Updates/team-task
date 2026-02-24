@@ -1,9 +1,11 @@
 import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Home } from "lucide-react";
 
 const NotFound = () => {
+  const { t } = useTranslation("notFound");
   const location = useLocation();
 
   useEffect(() => {
@@ -21,15 +23,13 @@ const NotFound = () => {
             <AlertCircle className="w-8 h-8 text-red-600" />
           </div>
         </div>
-        <h1 className="text-5xl font-bold mb-2 text-foreground">404</h1>
-        <p className="text-2xl font-semibold text-foreground mb-2">Page Not Found</p>
-        <p className="text-muted-foreground mb-8">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
+        <h1 className="text-5xl font-bold mb-2 text-foreground">{t("title")}</h1>
+        <p className="text-2xl font-semibold text-foreground mb-2">{t("heading")}</p>
+        <p className="text-muted-foreground mb-8">{t("message")}</p>
         <Link to="/">
           <Button className="gap-2 bg-primary hover:bg-primary/90 text-white">
             <Home className="w-4 h-4" />
-            Return to Home
+            {t("returnHome")}
           </Button>
         </Link>
       </div>

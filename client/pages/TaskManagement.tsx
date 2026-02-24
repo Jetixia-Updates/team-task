@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -86,18 +87,25 @@ const mockTasks: Task[] = [
 const employees = ["John Doe", "Sarah Johnson", "Mike Chen", "Alex Kumar", "Emma Wilson"];
 
 export default function TaskManagement() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<Task["status"] | "all">("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    title: string;
+    description: string;
+    assignedTo: string;
+    deadline: string;
+    priority: Task["priority"];
+  }>({
     title: "",
     description: "",
     assignedTo: "",
     deadline: "",
-    priority: "medium" as const,
+    priority: "medium",
   });
 
   const filteredTasks = tasks.filter((task) => {
@@ -133,7 +141,7 @@ export default function TaskManagement() {
 
   const handleSaveTask = () => {
     if (!formData.title || !formData.assignedTo || !formData.deadline) {
-      alert("Please fill in all required fields");
+      alert(t("taskManagement.fillRequired"));
       return;
     }
 
@@ -163,8 +171,8 @@ export default function TaskManagement() {
   };
 
   const handleDeleteTask = (id: string) => {
-    if (window.confirm("Are you sure you want to delete this task?")) {
-      setTasks(tasks.filter((t) => t.id !== id));
+    if (window.confirm(t("taskManagement.confirmDeleteTask"))) {
+      setTasks(tasks.filter((task) => task.id !== id));
     }
   };
 
@@ -219,7 +227,7 @@ export default function TaskManagement() {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-2xl font-bold">Task Management</h1>
+            <h1 className="text-2xl font-bold">{t("taskManagement.title")}</h1>
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -229,25 +237,25 @@ export default function TaskManagement() {
                 onClick={() => handleOpenDialog()}
               >
                 <Plus className="w-4 h-4" />
-                Create Task
+                {t("taskManagement.createTask")}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>{editingTask ? "Edit Task" : "Create New Task"}</DialogTitle>
+                <DialogTitle>{editingTask ? t("taskManagement.editTask") : t("taskManagement.createNewTask")}</DialogTitle>
                 <DialogDescription>
                   {editingTask
-                    ? "Update the task details below"
-                    : "Fill in the details to create a new task"}
+                    ? t("taskManagement.editTaskDesc")
+                    : t("taskManagement.createTaskDesc")}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="title">Task Title *</Label>
+                  <Label htmlFor="title">{t("taskManagement.taskTitle")}</Label>
                   <Input
                     id="title"
-                    placeholder="Enter task title"
+                    placeholder={t("taskManagement.taskTitlePlaceholder")}
                     value={formData.title}
                     onChange={(e) =>
                       setFormData({ ...formData, title: e.target.value })
@@ -257,10 +265,10 @@ export default function TaskManagement() {
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">{t("taskManagement.description")}</Label>
                   <Textarea
                     id="description"
-                    placeholder="Enter task description"
+                    placeholder={t("taskManagement.descriptionPlaceholder")}
                     value={formData.description}
                     onChange={(e) =>
                       setFormData({ ...formData, description: e.target.value })
@@ -272,12 +280,12 @@ export default function TaskManagement() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="assignedTo">Assign To *</Label>
+                    <Label htmlFor="assignedTo">{t("taskManagement.assignTo")}</Label>
                     <Select value={formData.assignedTo} onValueChange={(value) =>
                       setFormData({ ...formData, assignedTo: value })
                     }>
                       <SelectTrigger className="mt-2">
-                        <SelectValue placeholder="Select employee" />
+                        <SelectValue placeholder={t("taskManagement.selectEmployee")} />
                       </SelectTrigger>
                       <SelectContent>
                         {employees.map((emp) => (
@@ -290,7 +298,7 @@ export default function TaskManagement() {
                   </div>
 
                   <div>
-                    <Label htmlFor="priority">Priority</Label>
+                    <Label htmlFor="priority">{t("taskManagement.priority")}</Label>
                     <Select
                       value={formData.priority}
                       onValueChange={(value: any) =>
@@ -301,16 +309,16 @@ export default function TaskManagement() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="low">{t("common.low")}</SelectItem>
+                        <SelectItem value="medium">{t("common.medium")}</SelectItem>
+                        <SelectItem value="high">{t("common.high")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="deadline">Deadline *</Label>
+                  <Label htmlFor="deadline">{t("taskManagement.deadline")}</Label>
                   <Input
                     id="deadline"
                     type="date"
@@ -327,13 +335,13 @@ export default function TaskManagement() {
                     variant="outline"
                     onClick={() => setIsDialogOpen(false)}
                   >
-                    Cancel
+                    {t("common.cancel")}
                   </Button>
                   <Button
                     className="bg-primary hover:bg-primary/90"
                     onClick={handleSaveTask}
                   >
-                    {editingTask ? "Update Task" : "Create Task"}
+                    {editingTask ? t("taskManagement.updateTask") : t("taskManagement.createTask")}
                   </Button>
                 </div>
               </div>
@@ -347,12 +355,12 @@ export default function TaskManagement() {
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8">
           <div className="flex-1 max-w-md relative">
-            <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
+            <Search className="w-4 h-4 absolute left-3 top-3 rtl:left-auto rtl:right-3 text-muted-foreground" />
             <Input
-              placeholder="Search tasks..."
+              placeholder={t("taskManagement.searchTasks")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-white border-border"
+              className="pl-10 rtl:pl-0 rtl:pr-10 bg-white border-border"
             />
           </div>
 
@@ -368,7 +376,9 @@ export default function TaskManagement() {
                       : "bg-white border border-border text-foreground hover:border-primary"
                   }`}
                 >
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                  {status === "all"
+                    ? t("common.all")
+                    : t(`common.${status === "in-progress" ? "inProgress" : status}`)}
                 </button>
               )
             )}
@@ -379,10 +389,10 @@ export default function TaskManagement() {
         <div className="space-y-4">
           {filteredTasks.length === 0 ? (
             <Card className="border-0 shadow-sm">
-              <CardContent className="p-12 text-center">
-                <p className="text-muted-foreground text-lg">No tasks found</p>
-              </CardContent>
-            </Card>
+                <CardContent className="p-12 text-center">
+                  <p className="text-muted-foreground text-lg">{t("taskManagement.noTasks")}</p>
+                </CardContent>
+              </Card>
           ) : (
             filteredTasks.map((task) => (
               <Card key={task.id} className="border-0 shadow-sm hover:shadow-md transition-all">
@@ -404,9 +414,7 @@ export default function TaskManagement() {
                             <Badge
                               className={`${getPriorityColor(task.priority)} border`}
                             >
-                              {task.priority.charAt(0).toUpperCase() +
-                                task.priority.slice(1)}{" "}
-                              Priority
+                              {t(`common.${task.priority}`)} {t("common.priority")}
                             </Badge>
                             <Badge variant="outline">{task.assignedTo}</Badge>
                           </div>
@@ -416,7 +424,7 @@ export default function TaskManagement() {
 
                     <div className="flex flex-col items-end gap-4">
                       <div className="text-sm text-muted-foreground">
-                        Due: {new Date(task.deadline).toLocaleDateString()}
+                        {t("common.due")}: {new Date(task.deadline).toLocaleDateString()}
                       </div>
 
                       <DropdownMenu>
@@ -431,20 +439,20 @@ export default function TaskManagement() {
                             className="gap-2 cursor-pointer"
                           >
                             <Edit2 className="w-4 h-4" />
-                            Edit Task
+                            {t("taskManagement.editTask")}
                           </DropdownMenuItem>
                           <DropdownMenuItem className="gap-2 cursor-pointer">
-                            Mark as In Progress
+                            {t("taskManagement.markInProgress")}
                           </DropdownMenuItem>
                           <DropdownMenuItem className="gap-2 cursor-pointer">
-                            Mark as Completed
+                            {t("taskManagement.markCompleted")}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleDeleteTask(task.id)}
                             className="gap-2 cursor-pointer text-red-600"
                           >
                             <Trash2 className="w-4 h-4" />
-                            Delete Task
+                            {t("taskManagement.deleteTask")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

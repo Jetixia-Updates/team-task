@@ -1,0 +1,10 @@
+{
+  "demo": {
+    "message": "مرحباً من خادم Express"
+  },
+  "errors": {
+    "unauthorized": "غير مصرح",
+    "notFound": "المورد غير موجود",
+    "validationFailed": "فشل التحقق"
+  }
+}

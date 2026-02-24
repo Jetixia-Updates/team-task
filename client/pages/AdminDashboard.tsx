@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,8 +26,10 @@ import {
   ListTodo,
   FileText,
   ArrowRight,
+  Share2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface Employee {
   id: string;
@@ -106,6 +109,7 @@ const mockEmployees: Employee[] = [
 ];
 
 export default function AdminDashboard() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
@@ -157,10 +161,10 @@ export default function AdminDashboard() {
   };
 
   const getPerformanceBadge = (rate: number) => {
-    if (rate >= 80) return "Excellent";
-    if (rate >= 60) return "Good";
-    if (rate >= 40) return "Fair";
-    return "Needs Improvement";
+    if (rate >= 80) return t("dashboard.admin.excellent");
+    if (rate >= 60) return t("dashboard.admin.good");
+    if (rate >= 40) return t("dashboard.admin.fair");
+    return t("dashboard.admin.needsImprovement");
   };
 
   if (!user) {
@@ -179,26 +183,28 @@ export default function AdminDashboard() {
             >
               <Menu className="w-6 h-6" />
             </button>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 rtl:space-x-reverse">
               <img
                 src="/Adsolution logotrans.png"
                 alt="Adsolution"
                 className="h-10 w-auto object-contain"
               />
-              <h1 className="text-xl font-bold hidden sm:block">TaskFlow Admin</h1>
+              <h1 className="text-xl font-bold hidden sm:block">{t("dashboard.admin.title")}</h1>
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 rtl:space-x-reverse">
             <Link to="/admin/employees">
             <Button
               className="hidden sm:inline-flex gap-2 bg-primary hover:bg-primary/90"
               size="sm"
             >
               <Plus className="w-4 h-4" />
-              Add Employee
+              {t("dashboard.admin.addEmployee")}
             </Button>
           </Link>
+
+            <LanguageSwitcher />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -210,20 +216,20 @@ export default function AdminDashboard() {
                 <div className="px-4 py-3 border-b border-border">
                   <p className="font-semibold text-foreground">{user.name}</p>
                   <p className="text-sm text-muted-foreground">{user.email}</p>
-                  <p className="text-xs text-primary font-semibold mt-1">Admin</p>
+                  <p className="text-xs text-primary font-semibold mt-1">{t("common.admin")}</p>
                 </div>
                 <DropdownMenuItem className="cursor-pointer">
-                  Settings
+                  {t("common.settings")}
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer">
-                  Reports
+                  {t("common.reports")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={handleLogout}
                   className="text-red-600 cursor-pointer"
                 >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
+                  <LogOut className="w-4 h-4 mr-2 rtl:ml-2 rtl:mr-0" />
+                  {t("common.logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -235,12 +241,12 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-foreground mb-2">Team Overview</h2>
-          <p className="text-muted-foreground">Monitor your team's performance and manage tasks</p>
+          <h2 className="text-3xl font-bold text-foreground mb-2">{t("dashboard.admin.teamOverview")}</h2>
+          <p className="text-muted-foreground">{t("dashboard.admin.subtitle")}</p>
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Link to="/admin/tasks">
             <Card className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer h-full">
               <CardContent className="p-6">
@@ -250,8 +256,23 @@ export default function AdminDashboard() {
                   </div>
                   <ArrowRight className="w-4 h-4 text-muted-foreground" />
                 </div>
-                <h3 className="font-semibold text-foreground mb-1">Task Management</h3>
-                <p className="text-sm text-muted-foreground">Create and assign tasks</p>
+                <h3 className="font-semibold text-foreground mb-1">{t("dashboard.admin.taskManagement")}</h3>
+                <p className="text-sm text-muted-foreground">{t("dashboard.admin.taskManagementDesc")}</p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="/admin/distribute">
+            <Card className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer h-full">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="w-10 h-10 rounded-lg bg-teal-100 flex items-center justify-center">
+                    <Share2 className="w-5 h-5 text-teal-600" />
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-1">{t("dashboard.admin.taskDistribution")}</h3>
+                <p className="text-sm text-muted-foreground">{t("dashboard.admin.taskDistributionDesc")}</p>
               </CardContent>
             </Card>
           </Link>
@@ -265,8 +286,8 @@ export default function AdminDashboard() {
                   </div>
                   <ArrowRight className="w-4 h-4 text-muted-foreground" />
                 </div>
-                <h3 className="font-semibold text-foreground mb-1">Employee Management</h3>
-                <p className="text-sm text-muted-foreground">Manage team members</p>
+                <h3 className="font-semibold text-foreground mb-1">{t("dashboard.admin.employeeManagement")}</h3>
+                <p className="text-sm text-muted-foreground">{t("dashboard.admin.employeeManagementDesc")}</p>
               </CardContent>
             </Card>
           </Link>
@@ -280,8 +301,8 @@ export default function AdminDashboard() {
                   </div>
                   <ArrowRight className="w-4 h-4 text-muted-foreground" />
                 </div>
-                <h3 className="font-semibold text-foreground mb-1">Reports & Analytics</h3>
-                <p className="text-sm text-muted-foreground">View performance data</p>
+                <h3 className="font-semibold text-foreground mb-1">{t("dashboard.admin.reportsAnalytics")}</h3>
+                <p className="text-sm text-muted-foreground">{t("dashboard.admin.reportsAnalyticsDesc")}</p>
               </CardContent>
             </Card>
           </Link>
@@ -291,25 +312,25 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
             {
-              label: "Team Members",
+              label: t("dashboard.admin.teamMembers"),
               value: stats.totalEmployees,
               icon: Users,
               color: "from-blue-100 to-blue-50",
             },
             {
-              label: "Total Tasks",
+              label: t("dashboard.admin.totalTasks"),
               value: stats.totalTasks,
               icon: BarChart3,
               color: "from-amber-100 to-amber-50",
             },
             {
-              label: "Completed Tasks",
+              label: t("dashboard.admin.completedTasks"),
               value: stats.completedTasks,
               icon: CheckCircle2,
               color: "from-green-100 to-green-50",
             },
             {
-              label: "Avg. Completion",
+              label: t("dashboard.admin.avgCompletion"),
               value: `${stats.averageCompletionRate}%`,
               icon: TrendingUp,
               color: "from-teal-100 to-teal-50",
@@ -337,20 +358,20 @@ export default function AdminDashboard() {
         {/* Team Members */}
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <h3 className="text-2xl font-bold">Team Members</h3>
+            <h3 className="text-2xl font-bold">{t("dashboard.admin.teamMembers")}</h3>
             <div className="flex gap-2 w-full sm:w-auto">
               <div className="flex-1 sm:flex-none relative">
-                <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
+                <Search className="w-4 h-4 absolute left-3 top-3 rtl:left-auto rtl:right-3 text-muted-foreground" />
                 <Input
-                  placeholder="Search employees..."
+                  placeholder={t("dashboard.admin.searchEmployees")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-white border-border"
+                  className="pl-10 rtl:pl-0 rtl:pr-10 bg-white border-border"
                 />
               </div>
               <Button size="sm" className="gap-2 bg-primary hover:bg-primary/90 sm:flex hidden">
                 <Download className="w-4 h-4" />
-                Export Report
+                {t("dashboard.admin.exportReport")}
               </Button>
             </div>
           </div>
@@ -360,7 +381,7 @@ export default function AdminDashboard() {
             {filteredEmployees.length === 0 ? (
               <Card className="border-0 shadow-sm col-span-full">
                 <CardContent className="p-12 text-center">
-                  <p className="text-muted-foreground text-lg">No employees found</p>
+                  <p className="text-muted-foreground text-lg">{t("dashboard.admin.noEmployees")}</p>
                 </CardContent>
               </Card>
             ) : (
@@ -390,13 +411,13 @@ export default function AdminDashboard() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem className="cursor-pointer">
-                            View Tasks
+                            {t("dashboard.admin.viewTasks")}
                           </DropdownMenuItem>
                           <DropdownMenuItem className="cursor-pointer">
-                            Assign Task
+                            {t("dashboard.admin.assignTask")}
                           </DropdownMenuItem>
                           <DropdownMenuItem className="cursor-pointer">
-                            Edit Details
+                            {t("dashboard.admin.editDetails")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -406,10 +427,10 @@ export default function AdminDashboard() {
                     <div className="space-y-3">
                       <div className="grid grid-cols-2 gap-3">
                         <div className="bg-slate-50 rounded-lg p-3">
-                          <div className="flex items-center space-x-2 mb-1">
+                          <div className="flex items-center space-x-2 rtl:space-x-reverse mb-1">
                             <CheckCircle2 className="w-4 h-4 text-green-600" />
                             <span className="text-xs text-muted-foreground font-medium">
-                              Completed
+                              {t("common.completed")}
                             </span>
                           </div>
                           <p className="text-lg font-bold text-foreground">
@@ -417,10 +438,10 @@ export default function AdminDashboard() {
                           </p>
                         </div>
                         <div className="bg-slate-50 rounded-lg p-3">
-                          <div className="flex items-center space-x-2 mb-1">
+                          <div className="flex items-center space-x-2 rtl:space-x-reverse mb-1">
                             <Clock className="w-4 h-4 text-blue-600" />
                             <span className="text-xs text-muted-foreground font-medium">
-                              In Progress
+                              {t("common.inProgress")}
                             </span>
                           </div>
                           <p className="text-lg font-bold text-foreground">
@@ -428,10 +449,10 @@ export default function AdminDashboard() {
                           </p>
                         </div>
                         <div className="bg-slate-50 rounded-lg p-3">
-                          <div className="flex items-center space-x-2 mb-1">
+                          <div className="flex items-center space-x-2 rtl:space-x-reverse mb-1">
                             <AlertCircle className="w-4 h-4 text-orange-600" />
                             <span className="text-xs text-muted-foreground font-medium">
-                              Pending
+                              {t("common.pending")}
                             </span>
                           </div>
                           <p className="text-lg font-bold text-foreground">
@@ -439,12 +460,12 @@ export default function AdminDashboard() {
                           </p>
                         </div>
                         <div className={`bg-slate-50 rounded-lg p-3 border-2 border-transparent`}>
-                          <div className="flex items-center space-x-2 mb-1">
+                          <div className="flex items-center space-x-2 rtl:space-x-reverse mb-1">
                             <TrendingUp className={`w-4 h-4 ${getCompletionColor(
                               employee.completionRate
                             )}`} />
                             <span className="text-xs text-muted-foreground font-medium">
-                              Performance
+                              {t("dashboard.admin.performance")}
                             </span>
                           </div>
                           <p className={`text-lg font-bold ${getCompletionColor(
@@ -459,7 +480,7 @@ export default function AdminDashboard() {
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-xs font-medium text-muted-foreground">
-                            Completion Progress
+                            {t("dashboard.admin.completionProgress")}
                           </span>
                           <Badge
                             variant="secondary"

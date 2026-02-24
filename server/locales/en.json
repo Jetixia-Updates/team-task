@@ -1,0 +1,10 @@
+{
+  "demo": {
+    "message": "Hello from Express server"
+  },
+  "errors": {
+    "unauthorized": "Unauthorized",
+    "notFound": "Resource not found",
+    "validationFailed": "Validation failed"
+  }
+}

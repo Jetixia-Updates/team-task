@@ -118,6 +118,11 @@
     overflow-x: auto;
     white-space: pre;
   }
+
+  /* RTL support when dir="rtl" (e.g. Arabic) */
+  [dir="rtl"] {
+    text-align: right;
+  }
 }
 
 @layer components {
