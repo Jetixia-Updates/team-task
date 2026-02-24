@@ -49,6 +49,10 @@
     "adminDemo": "تجربة مدير",
     "employeeDemo": "تجربة موظف",
     "demoHint": "البيانات التجريبية معبأة أعلاه ↑",
+    "loginWithEmail": "الدخول بالبريد الإلكتروني",
+    "loginWithUsername": "الدخول باسم المستخدم",
+    "username": "اسم المستخدم",
+    "usernamePlaceholder": "أدخل اسم المستخدم",
     "features": {
       "teamManagement": "إدارة الفريق",
       "teamManagementDesc": "نظّم الموظفين ووزّع الأدوار",
@@ -84,6 +88,8 @@
       "taskDistributionDesc": "توزيع المهام على الفريق",
       "employeeManagement": "إدارة الموظفين",
       "employeeManagementDesc": "إدارة أعضاء الفريق",
+      "employeeAccounts": "حسابات دخول الموظفين",
+      "employeeAccountsDesc": "إنشاء اسم مستخدم وكلمة مرور للموظفين",
       "reportsAnalytics": "التقارير والتحليلات",
       "reportsAnalyticsDesc": "عرض بيانات الأداء",
       "teamMembers": "أعضاء الفريق",
@@ -139,6 +145,17 @@
     "deleteTask": "حذف المهمة",
     "confirmDeleteTask": "هل أنت متأكد من حذف هذه المهمة؟",
     "fillRequired": "يرجى تعبئة جميع الحقول المطلوبة"
+  },
+  "employeeAccounts": {
+    "title": "حسابات دخول الموظفين",
+    "subtitle": "إنشاء اسم مستخدم وكلمة مرور للموظفين",
+    "hint": "حدد اسم مستخدم وكلمة مرور لكل موظف. سيدخلون بها من صفحة تسجيل الدخول.",
+    "username": "اسم المستخدم",
+    "usernamePlaceholder": "مثال: johndoe",
+    "password": "كلمة المرور",
+    "passwordPlaceholder": "أدخل كلمة المرور",
+    "passwordLeaveEmpty": "اتركها فارغة للإبقاء على الحالية",
+    "saved": "تم الحفظ"
   },
   "employeeManagement": {
     "title": "إدارة الموظفين",

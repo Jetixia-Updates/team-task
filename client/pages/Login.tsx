@@ -7,11 +7,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { AlertCircle, Zap, Users, BarChart3, Shield } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { findAccountByUsername } from "@shared/employeeAccounts";
+
+type LoginMode = "email" | "username";
 
 interface LoginCredentials {
   email: string;
   password: string;
   role: "employee" | "admin";
+}
+
+interface UsernameCredentials {
+  username: string;
+  password: string;
 }
 
 const features = [
@@ -24,10 +32,15 @@ const features = [
 export default function Login() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [loginMode, setLoginMode] = useState<LoginMode>("email");
   const [credentials, setCredentials] = useState<LoginCredentials>({
     email: "",
     password: "",
     role: "employee",
+  });
+  const [usernameCredentials, setUsernameCredentials] = useState<UsernameCredentials>({
+    username: "",
+    password: "",
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -38,21 +51,38 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const user = {
-        id: Math.random().toString(36).substr(2, 9),
-        email: credentials.email,
-        role: credentials.role,
-        name: credentials.email.split("@")[0],
-      };
-
-      localStorage.setItem("user", JSON.stringify(user));
-
-      if (credentials.role === "admin") {
-        navigate("/admin");
-      } else {
+      if (loginMode === "username") {
+        const account = findAccountByUsername(
+          usernameCredentials.username.trim(),
+          usernameCredentials.password
+        );
+        if (!account) {
+          setError(t("login.loginError"));
+          setIsLoading(false);
+          return;
+        }
+        const user = {
+          id: account.id,
+          email: account.email,
+          role: "employee",
+          name: account.name,
+        };
+        localStorage.setItem("user", JSON.stringify(user));
         navigate("/dashboard");
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        const user = {
+          id: Math.random().toString(36).substr(2, 9),
+          email: credentials.email,
+          role: credentials.role,
+          name: credentials.email.split("@")[0],
+        };
+        localStorage.setItem("user", JSON.stringify(user));
+        if (credentials.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
       }
     } catch (err) {
       setError(t("login.loginError"));
@@ -138,6 +168,37 @@ export default function Login() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              <div className="flex gap-2 mb-4 p-1 bg-muted rounded-lg">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoginMode("email");
+                    setError("");
+                  }}
+                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all ${
+                    loginMode === "email"
+                      ? "bg-white text-foreground shadow"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {t("login.loginWithEmail")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoginMode("username");
+                    setError("");
+                  }}
+                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all ${
+                    loginMode === "username"
+                      ? "bg-white text-foreground shadow"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {t("login.loginWithUsername")}
+                </button>
+              </div>
+
               <form onSubmit={handleLogin} className="space-y-6">
                 {error && (
                   <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-start space-x-3 rtl:space-x-reverse">
@@ -146,71 +207,114 @@ export default function Login() {
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">
-                    {t("login.email")}
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder={t("login.emailPlaceholder")}
-                    value={credentials.email}
-                    onChange={(e) =>
-                      setCredentials((prev) => ({ ...prev, email: e.target.value }))
-                    }
-                    className="h-10 border-border bg-white"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium">
-                    {t("login.password")}
-                  </Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder={t("login.passwordPlaceholder")}
-                    value={credentials.password}
-                    onChange={(e) =>
-                      setCredentials((prev) => ({ ...prev, password: e.target.value }))
-                    }
-                    className="h-10 border-border bg-white"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">{t("login.loginAs")}</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setCredentials((prev) => ({ ...prev, role: "employee" }))
-                      }
-                      className={`py-2 px-3 rounded-lg border-2 transition-all text-sm font-medium ${
-                        credentials.role === "employee"
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-white text-foreground hover:border-primary/30"
-                      }`}
-                    >
-                      {t("login.employee")}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setCredentials((prev) => ({ ...prev, role: "admin" }))
-                      }
-                      className={`py-2 px-3 rounded-lg border-2 transition-all text-sm font-medium ${
-                        credentials.role === "admin"
-                          ? "border-secondary bg-secondary/10 text-secondary"
-                          : "border-border bg-white text-foreground hover:border-secondary/30"
-                      }`}
-                    >
-                      {t("common.admin")}
-                    </button>
-                  </div>
-                </div>
+                {loginMode === "username" ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="username" className="text-sm font-medium">
+                        {t("login.username")}
+                      </Label>
+                      <Input
+                        id="username"
+                        type="text"
+                        placeholder={t("login.usernamePlaceholder")}
+                        value={usernameCredentials.username}
+                        onChange={(e) =>
+                          setUsernameCredentials((prev) => ({
+                            ...prev,
+                            username: e.target.value,
+                          }))
+                        }
+                        className="h-10 border-border bg-white"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="password-username" className="text-sm font-medium">
+                        {t("login.password")}
+                      </Label>
+                      <Input
+                        id="password-username"
+                        type="password"
+                        placeholder={t("login.passwordPlaceholder")}
+                        value={usernameCredentials.password}
+                        onChange={(e) =>
+                          setUsernameCredentials((prev) => ({
+                            ...prev,
+                            password: e.target.value,
+                          }))
+                        }
+                        className="h-10 border-border bg-white"
+                        required
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm font-medium">
+                        {t("login.email")}
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder={t("login.emailPlaceholder")}
+                        value={credentials.email}
+                        onChange={(e) =>
+                          setCredentials((prev) => ({ ...prev, email: e.target.value }))
+                        }
+                        className="h-10 border-border bg-white"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-sm font-medium">
+                        {t("login.password")}
+                      </Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        placeholder={t("login.passwordPlaceholder")}
+                        value={credentials.password}
+                        onChange={(e) =>
+                          setCredentials((prev) => ({ ...prev, password: e.target.value }))
+                        }
+                        className="h-10 border-border bg-white"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">{t("login.loginAs")}</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCredentials((prev) => ({ ...prev, role: "employee" }))
+                          }
+                          className={`py-2 px-3 rounded-lg border-2 transition-all text-sm font-medium ${
+                            credentials.role === "employee"
+                              ? "border-primary bg-primary/10 text-primary"
+                              : "border-border bg-white text-foreground hover:border-primary/30"
+                          }`}
+                        >
+                          {t("login.employee")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCredentials((prev) => ({ ...prev, role: "admin" }))
+                          }
+                          className={`py-2 px-3 rounded-lg border-2 transition-all text-sm font-medium ${
+                            credentials.role === "admin"
+                              ? "border-secondary bg-secondary/10 text-secondary"
+                              : "border-border bg-white text-foreground hover:border-secondary/30"
+                          }`}
+                        >
+                          {t("common.admin")}
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <Button
                   type="submit"
@@ -227,11 +331,13 @@ export default function Login() {
                   )}
                 </Button>
 
-                <div className="pt-4 border-t border-border">
-                  <p className="text-xs text-center text-muted-foreground">
-                    {t("login.demoHint")}
-                  </p>
-                </div>
+                {loginMode === "email" && (
+                  <div className="pt-4 border-t border-border">
+                    <p className="text-xs text-center text-muted-foreground">
+                      {t("login.demoHint")}
+                    </p>
+                  </div>
+                )}
               </form>
             </CardContent>
           </Card>

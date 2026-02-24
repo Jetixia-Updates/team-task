@@ -27,6 +27,7 @@ import {
   FileText,
   ArrowRight,
   Share2,
+  KeyRound,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -288,6 +289,21 @@ export default function AdminDashboard() {
                 </div>
                 <h3 className="font-semibold text-foreground mb-1">{t("dashboard.admin.employeeManagement")}</h3>
                 <p className="text-sm text-muted-foreground">{t("dashboard.admin.employeeManagementDesc")}</p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="/admin/accounts">
+            <Card className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer h-full">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+                    <KeyRound className="w-5 h-5 text-amber-600" />
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-1">{t("dashboard.admin.employeeAccounts")}</h3>
+                <p className="text-sm text-muted-foreground">{t("dashboard.admin.employeeAccountsDesc")}</p>
               </CardContent>
             </Card>
           </Link>

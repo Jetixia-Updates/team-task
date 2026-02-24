@@ -49,6 +49,10 @@
     "adminDemo": "Admin Demo",
     "employeeDemo": "Employee Demo",
     "demoHint": "Demo credentials are pre-filled above ↑",
+    "loginWithEmail": "Login with Email",
+    "loginWithUsername": "Login with Username",
+    "username": "Username",
+    "usernamePlaceholder": "Enter username",
     "features": {
       "teamManagement": "Team Management",
       "teamManagementDesc": "Organize employees and assign roles",
@@ -84,6 +88,8 @@
       "taskDistributionDesc": "Distribute tasks across the team",
       "employeeManagement": "Employee Management",
       "employeeManagementDesc": "Manage team members",
+      "employeeAccounts": "Employee Login Accounts",
+      "employeeAccountsDesc": "Create username & password for employees",
       "reportsAnalytics": "Reports & Analytics",
       "reportsAnalyticsDesc": "View performance data",
       "teamMembers": "Team Members",
@@ -139,6 +145,17 @@
     "deleteTask": "Delete Task",
     "confirmDeleteTask": "Are you sure you want to delete this task?",
     "fillRequired": "Please fill in all required fields"
+  },
+  "employeeAccounts": {
+    "title": "Employee Login Accounts",
+    "subtitle": "Create username and password for employees",
+    "hint": "Set a username and password for each employee. They will use these to sign in from the login page.",
+    "username": "Username",
+    "usernamePlaceholder": "e.g. johndoe",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password",
+    "passwordLeaveEmpty": "Leave empty to keep current",
+    "saved": "Saved"
   },
   "employeeManagement": {
     "title": "Employee Management",
